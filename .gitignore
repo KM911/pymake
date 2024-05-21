@@ -19,7 +19,7 @@
 *.webp
 !image/README/*.*
 __pycache__/
-
+venv
 node_modules
 dist
 output

@@ -1,29 +1,32 @@
 import sys
 import os
 import subprocess
-from import init import *
+
+from init import *
 
 
-
-def py_venv():
+def py_venv(argv: list):
     Run("python -m venv ./venv")
 
 
-def py_run():
+def py_run(argv: list):
     # Run("./venv/bin/python main.py")
-    Load_Project_Env()
+
     for i in argv:
         Run("./venv/bin/python "+i)
 
-def py_pip():
-    Load_Project_Env()
+
+def py_pip(argv: list):
 
     # print("your argv is",argv)
-    for i in argv :
+    for i in argv:
         Run("./venv/bin/pip install " + i)
-def py_install():
+
+
+def py_install(argv: list):
     Run("./venv/bin/pip install -r requirements.txt")
 
-def py_export():
+
+def py_export(argv: list):
     # export requirements.txt
     Run("./venv/bin/pip freeze > requirements.txt")

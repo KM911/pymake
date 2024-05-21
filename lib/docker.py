@@ -1,17 +1,15 @@
 import sys
 import os
 import subprocess
-from import init import *
-
+from init import *
 
 
 # Docker function
 
 
-def Load_Docker_Env():
-    Load_Project_Env()
+def Load_Docker_Env(argv=[]):
     global image_info, version
-    image_info = [x for x in CommandResult("docker image list").split(
+    image_info = [x for x in CommandResult("sudo docker image list").split(
         "\n") if x.startswith(project)]
     if len(image_info) == 0:
         print("no image")
@@ -21,8 +19,8 @@ def Load_Docker_Env():
         version = re.findall(r"\d+\.\d+\.\d+", image_info[0])[0]
 
 
-def image():
-    Load_Project_Env()
+def image(argv=[]):
+
     Load_Docker_Env()
     if len(image_info) == 0:
         print("no image")
@@ -30,8 +28,8 @@ def image():
         print(image_info)
 
 
-def container():
-    Load_Project_Env()
+def container(argv=[]):
+
     container = [x for x in CommandResult(
         "docker container list").split("\n") if x.startswith(project)]
     if len(container) == 0:
@@ -40,7 +38,7 @@ def container():
         print(container)
 
 
-def docker_init():
+def docker_init(argv=[]):
     os.mkdir("docker")
     os.mkdir("docker/public")
 
@@ -51,15 +49,15 @@ def docker_init():
     file.close()
 
 
-def docker_build():
+def docker_build(argv=[]):
     image_build()
 
 
-def redis_start():
+def redis_start(argv=[]):
     Run("docker run -d --name redis -p 6379:6379  -v /data/redis:/data/redis redis:latest")
 
 
-def image_build():
+def image_build(argv=[]):
     Load_Docker_Env()
     import re
     version_num = version.split(".")
@@ -77,25 +75,25 @@ def image_build():
     Run("docker image rm -f "+project+":"+version)
 
 
-def image_list():
+def image_list(argv=[]):
     Load_Docker_Env()
     Run("docker image list | grep " + project)
 
 
-def image_ls():
+def image_ls(argv=[]):
     image_list()
 
 
-def container_clean():
+def container_clean(argv=[]):
     Run("docker container prune ")
 
 
 #
-def image_clean():
+def image_clean(argv=[]):
     #
     Run("docker image prune")
 
 
-def image_run():
+def image_run(argv=[]):
     Load_Docker_Env()
     Run("docker run -it "+project+":"+version)

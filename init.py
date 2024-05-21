@@ -2,18 +2,23 @@ import sys
 import os
 import subprocess
 
-from lib.go import * 
-from lib.py import *
-from lib.rust import *
-
-
-from lib.docker import *
+# from lib.go import *
+# from lib.py import *
+# from lib.rust import *
+# from lib.docker import *
 # Core function
 
 # 输出cmd path or bash path
 
 Github_Username = "KM911"
 Template_Dir = "/home/km/Code/template/go/"
+
+pwd = os.getcwd()
+# print("pwd =", pwd)
+project = pwd.replace("\\", "/").split("/")[-1]
+# print("project =", project)
+env = os.environ.copy()
+
 
 def Run(command: str):
     subprocess.run(command, shell=True)
@@ -71,15 +76,6 @@ def ExeConvent(path: str) -> str:
         return path
 
 
-def Load_Project_Env():
-    global pwd, project, env
-    pwd = os.getcwd()
-    # print("pwd =", pwd)
-    project = pwd.replace("\\", "/").split("/")[-1]
-    # print("project =", project)
-    env = os.environ.copy()
-
-
 def Get_Programming_Using():
     global programming_using
     SupportLanguage = ["go", "rs", "c", "cpp", "py"]
@@ -88,16 +84,19 @@ def Get_Programming_Using():
 def CheckEnv():
     print("need python3 rg")
 
+
 def help():  # show all function
     # content = [x[4:-1] for x in open(Template_Dir +"pymake.py", "r", encoding='utf-8').readlines()
     #            if x.startswith("def") and x[4].islower()]
     # print("\n".join(content))
     print("help")
 
+
 # main function
 # TODO add more typo
 ErrorDict = {"iamge": "image", "benhc": "bench",
              "clnea": "clean", "dokcer": "docker", "dokecr": "docker", "dcoker": "docker"}
+
 
 def Parse():
     print(sys.argv)
@@ -125,7 +124,7 @@ def Parse():
         argv = sys.argv[3:]
         try:
             eval("_".join(sys.argv[1:3])+"()")
-        except NameError as e :
+        except NameError as e:
             print("name error", e)
             fixed_1 = ErrorDict.get(sys.argv[1], None)
             fixed_2 = ErrorDict.get(sys.argv[2], None)

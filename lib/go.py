@@ -1,48 +1,48 @@
 import sys
 import os
 import subprocess
-# from import init import *
-
-import init
 
 
-def Load_Go_Env():
-    init.init.Load_Project_Env()
+from init import *
+
+
+def Load_Go_Env(argv=[]):
+
     global mod
     mod = open("go.mod", "r").readline().split(" ")[
         1].strip()
 
 
-def go_test():
+def go_test(argv=[]):
     Load_Go_Env()
-    init.init.Run(" ".join(["go", "test", "-v", mod+"/test"]))
+    Run(" ".join(["go", "test", "-v", mod+"/test"]))
 
 # 一个大问题 它不会显示 关于内存占用的部分
 # 131072 B/op 1 allocs/op
 
 
-def go_gen():
+def go_gen(argv=[]):
     Load_Go_Env()
-    init.init.Run("go generate")
+    Run("go generate")
     go_build()
 
 
-def go_bin():
+def go_bin(argv=[]):
     Load_Go_Env()
     go_build()
-    init.init.Run("mv -f "+project + " /usr/bin/" + project)
+    Run("mv -f "+project + " /usr/bin/" + project)
 
 
 def Go_Benchmark(package: str):
     Load_Go_Env()
-    init.Cd(package)
+    Cd(package)
     command = " ".join(
         ["go", "test", "-c", "-o", "benchmark.test", mod+"/"+package])
-    init.init.Run(command)
-    command = " ".join([init.ExecutePathConvent("benchmark.test"),
+    Run(command)
+    command = " ".join([ExecutePathConvent("benchmark.test"),
                        "-test.benchmem", "-test.bench",  "."])
 
-    result = init.CommandResult(command).split("\n")[4:-2]
+    result = CommandResult(command).split("\n")[4:-2]
     import re
     regex_time = re.compile(r"\d+.?\d?(?= [mnu]s/op)")
 
@@ -60,7 +60,7 @@ def Go_Benchmark(package: str):
 
     # sorted_function_result.insert(0, ["function", "time/op", "ratio", "delay"])
     format_output = [
-        f"{x[0]:20}    {x[1]:12}{unit}   {round(float(x[1]/min_time),3):10}    {float(x[1])-min_time}{unit}" for x in sorted_function_result]
+        f"{x[0]:20}    {x[1]:12}{unit}   {round(float(x[1]/min_time), 3):10}    {float(x[1])-min_time}{unit}" for x in sorted_function_result]
     # format_output.insert(
     #     0, "function name              time/op     ratio    delta")
     format_output.insert(0,
@@ -84,7 +84,7 @@ def GoReMod(file: str, project: str):
         f.writelines(lines)
 
 
-def go_router():
+def go_router(argv=[]):
     Load_Go_Env()
     router_text = """"""
 
@@ -100,8 +100,9 @@ def go_router():
 
     print(get_list)
 
-def go_cli():
-    init.init.Run("gen cli")
+
+def go_cli(argv=[]):
+    Run("gen cli")
     go_mod()
     go_build()
 
@@ -109,46 +110,29 @@ def go_cli():
 # must replace
 #  yes you are right
 
-def go_bench():  # go test -bench
-    global argv
-    # print(argc, argv)
-    # # for i in range(3):
-    # # print(i, argv)
-    # # Go_Benchmark("benchmark")
-    if init.argc <= 3:
-        Go_Benchmark("benchmark")
-
-    else:
-        for i in argv:
-            Go_Benchmark(i)
+def go_bench(argv=[]):  # go test -bench
+    for i in argv:
+        Go_Benchmark(i)
 
 
-def go_prof():
-    # main or benchmark ????
-    global argv
-    if len(argv) == 0:
-        pass
-    # pass
-
-
-def go_run():
+def go_run(argv=[]):
     Load_Go_Env()
-    init.init.Run(" ".join(["go", "run", "main.go"]+argv))
+    Run(" ".join(["go", "run", "main.go"]+argv))
 
 
-def go_build():
-    init.init.Load_Project_Env()
+def go_build(argv=[]):
+
     if os.name == "nt":
         go_win()
     else:
         go_linux()
 
 
-def go_win():
-    init.Load_Project_Env()
-    init.init.env.update({"CGO_ENABLED": "0", "GOOS": "windows"})
+def go_win(argv=[]):
+
+    env.update({"CGO_ENABLED": "0", "GOOS": "windows"})
     subprocess.run(["go", "build", "-ldflags", "-s -w",
-                   "-o", init.project+".exe"], env=init.env)
+                   "-o", project+".exe"], env=env)
 
 
 def FileContentReplace(_src, old_s, new_s):
@@ -210,21 +194,20 @@ def ReplaceGoImport(project):
                     GoReMod(file+"/"+_file, project)
 
 
-
-def go_mod():
+def go_mod(argv=[]):
     # go: D:\GITHUB\KM911\template\p\gm\go.mod already exists
-    init.Load_Project_Env()
+
     # 对main.go进行replace
-    ReplaceGoImport(init.project)
+    ReplaceGoImport(project)
 
     # GoReMod()
 
-    GoProject = "github.com/"+init.Github_Username+"/"+init.project
+    GoProject = "github.com/"+Github_Username+"/"+project
 #     只有一个文件的修改是不足以偿还的
 # // 全都需要进行替换
 #     FileContentReplaceRegex("main.go", "./lib/*", GoProject)
     CompletedProcess = subprocess.run(
-        ["go", "mod", "init", GoProject], env=init.env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        ["go", "mod", "init", GoProject], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if CompletedProcess.returncode == 0:
         print("go mod init success")
     else:
@@ -235,12 +218,10 @@ def go_mod():
         with open("go.mod", "w") as file:
             file.writelines(lines)
 
-    init.Run("go mod tidy")
+    Run("go mod tidy")
 
 
-def go_import():
-    global argv
-    print(argv)
+def go_import(argv=[]):
     if len(argv) != 2:
         print("go_import old new")
     else:
@@ -249,7 +230,7 @@ def go_import():
 # TODO : create every template init ????
 
 
-def go_init():
+def go_init(argv=[]):
 
     go_mod()
     main_text = """package main
@@ -262,26 +243,26 @@ func main() {
     file.close()
 
 
-def go_hidegui():
-    init.Load_Project_Env()
-    init.env.update({"CGO_ENABLED": "0", "GOOS": "windows"})
+def go_hidegui(argv=[]):
+
+    env.update({"CGO_ENABLED": "0", "GOOS": "windows"})
     subprocess.run(["go", "build", "-ldflags",
-                   "-s -w -H=windowsgui", "-o", init.project+".exe"], env=init.env)
+                   "-s -w -H=windowsgui", "-o", project+".exe"], env=env)
 
 
-def go_linux():
-    init.Load_Project_Env()
-    init.env.update({"CGO_ENABLED": "0", "GOOS": "linux"})
+def go_linux(argv=[]):
+
+    env.update({"CGO_ENABLED": "0", "GOOS": "linux"})
     subprocess.run(["go", "build", "-ldflags",
-                   "-s -w", "-o", init.project], env=init.env)
+                   "-s -w", "-o", project], env=env)
 
 
-def go_static():
-    init.Load_Project_Env()
-    init.env.update({"CGO_ENABLED": "0", "GOOS": "linux"})
+def go_static(argv=[]):
+
+    env.update({"CGO_ENABLED": "0", "GOOS": "linux"})
     subprocess.run(["go", "build", "-ldflags",
-                   "-s -w -extldflags -static", "-o", init.project], env=init.env)
+                   "-s -w -extldflags -static", "-o", project], env=env)
 
 
-def go_proxy():
-    init.ShowCommand("go env -w GOPROXY=https://goproxy.cn,direct")
+def go_proxy(argv=[]):
+    ShowCommand("go env -w GOPROXY=https://goproxy.cn,direct")

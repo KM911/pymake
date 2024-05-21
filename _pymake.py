@@ -3,7 +3,7 @@ import sys
 import os
 import subprocess
 
-import init
+from init import *
 
 # Core function
 
@@ -11,6 +11,7 @@ import init
 
 Github_Username = "KM911"
 Template_Dir = "/home/km/Code/template/go/"
+
 
 def Run(command: str):
     subprocess.run(command, shell=True)
@@ -96,26 +97,28 @@ def py_run():
     for i in argv:
         Run("./venv/bin/python "+i)
 
+
 def py_pip():
     Load_Project_Env()
 
     # print("your argv is",argv)
-    for i in argv :
+    for i in argv:
         Run("./venv/bin/pip install " + i)
+
+
 def py_install():
     Run("./venv/bin/pip install -r requirements.txt")
+
 
 def py_export():
     # export requirements.txt
     Run("./venv/bin/pip freeze > requirements.txt")
-# def 
+# def
 
-# def 
+# def
 
 
 # basic function
-
-
 
 
 def clean():
@@ -184,7 +187,7 @@ def Go_Benchmark(package: str):
 
     # sorted_function_result.insert(0, ["function", "time/op", "ratio", "delay"])
     format_output = [
-        f"{x[0]:20}    {x[1]:12}{unit}   {round(float(x[1]/min_time),3):10}    {float(x[1])-min_time}{unit}" for x in sorted_function_result]
+        f"{x[0]:20}    {x[1]:12}{unit}   {round(float(x[1]/min_time), 3):10}    {float(x[1])-min_time}{unit}" for x in sorted_function_result]
     # format_output.insert(
     #     0, "function name              time/op     ratio    delta")
     format_output.insert(0,
@@ -223,6 +226,7 @@ def go_router():
         get_list.append(file)
 
     print(get_list)
+
 
 def go_cli():
     Run("gen cli")
@@ -334,7 +338,6 @@ def ReplaceGoImport(project):
                     GoReMod(file+"/"+_file, project)
 
 
-
 def go_mod():
     # go: D:\GITHUB\KM911\template\p\gm\go.mod already exists
     Load_Project_Env()
@@ -422,9 +425,12 @@ def rust_build():
     Run("cargo build --release")
     # move file into current directory
     Run("cp ./target/release/"+project+" ./"+project)
+
+
 def rust_expand():
     Load_Project_Env()
     Run("cargo expand > main.rs")
+
 
 def rust_r():
     rust_release()
@@ -531,8 +537,6 @@ def image_clean():
 def image_run():
     Load_Docker_Env()
     Run("docker run -it "+project+":"+version)
-
-
 
 
 init.Parse()
