@@ -420,7 +420,7 @@ def upx():
 
 # Rust function
 
-def rust_build():
+def rs_build():
     Load_Project_Env()
     Run("cargo build --release")
     # move file into current directory

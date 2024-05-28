@@ -20,6 +20,15 @@ def go_test(argv=[]):
 # 一个大问题 它不会显示 关于内存占用的部分
 # 131072 B/op 1 allocs/op
 
+def go_init():
+    main_text = """package main 
+    func main(){
+    println("hello world)
+    }""" 
+    file = open("main.go", "w", encoding="utf-8")
+    file.write(main_text)
+    file.close()
+    go_mod()
 
 def go_gen(argv=[]):
     Load_Go_Env()
@@ -30,7 +39,7 @@ def go_gen(argv=[]):
 def go_bin(argv=[]):
     Load_Go_Env()
     go_build()
-    Run("mv -f "+project + " /usr/bin/" + project)
+    Run("sudo mv -f "+project + " /usr/bin/" + project)
 
 
 def Go_Benchmark(package: str):
@@ -121,7 +130,6 @@ def go_run(argv=[]):
 
 
 def go_build(argv=[]):
-
     if os.name == "nt":
         go_win()
     else:

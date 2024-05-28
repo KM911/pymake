@@ -5,24 +5,24 @@ import subprocess
 from init import *
 
 
-def rust_build(argv: list):
-
-    Run("cargo build --release")
-    # move file into current directory
-    Run("cp ./target/release/"+project+" ./"+project)
-
-
-def rust_expand(argv: list):
+def rs_expand(argv: list):
 
     Run("cargo expand > main.rs")
 
 
-def rust_r(argv: list):
-    rust_release()
+def rs(argv: list):
+    # rs_release()
+    rs_debug()
 
-
-def rust_release(argv: list):
+def rs_release(argv: list):
 
     Run("cargo build --release")
     # move file into current directory
     Run("cp ./target/release/"+project+" ./"+project)
+
+
+def rs_debug(argv: list):
+    Run("cargo build --debug")
+    # move file into current directory
+    Run("cp ./target/debug/"+project+" ./"+project)
+
