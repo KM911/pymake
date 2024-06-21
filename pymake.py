@@ -8,7 +8,6 @@ import subprocess
 # 输出cmd path or bash path
 
 Github_Username = "KM911"
-Template_Dir = "/home/km/Code/template/go/"
 
 
 def Run(command: str):

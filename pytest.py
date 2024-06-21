@@ -12,7 +12,6 @@ from lib.docker import *
 
 
 Github_Username = "KM911"
-Template_Dir = "/home/km/Code/template/go/"
 
 
 def Load_Project_Env():

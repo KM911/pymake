@@ -40,5 +40,5 @@ rebuild it will go / rust
 
 ## rebuild
 
-1. 核心 python eval 可以将 string 作为代码执行. 例如 eval("hello") 或者 eval("a=list()") 
+1. 核心 python eval 可以将 string 作为代码执行. 例如 eval("help()") 或者 eval("a=list()") 
 2. 参数传递问题. makefile can not pass args . 

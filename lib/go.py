@@ -20,15 +20,17 @@ def go_test(argv=[]):
 # 一个大问题 它不会显示 关于内存占用的部分
 # 131072 B/op 1 allocs/op
 
+
 def go_init():
-    main_text = """package main 
+    main_text = """package main
     func main(){
     println("hello world)
-    }""" 
+    }"""
     file = open("main.go", "w", encoding="utf-8")
     file.write(main_text)
     file.close()
     go_mod()
+
 
 def go_gen(argv=[]):
     Load_Go_Env()
@@ -52,32 +54,56 @@ def Go_Benchmark(package: str):
                        "-test.benchmem", "-test.bench",  "."])
 
     result = CommandResult(command).split("\n")[4:-2]
+    print("result", result)
     import re
     regex_time = re.compile(r"\d+.?\d?(?= [mnu]s/op)")
+    regex_mem = re.compile(r"\d+(?= [KMG]B/op)")
+    regex_alloc = re.compile(r"\d+(?= allocs/op)")
 
     function_result = [result[i].split("-12") for i in range(len(result))]
 
     # BenchmarkConbineJoin-12            48390             24538 ns/op           16224 B/op          8 allocs/op
-    unit = re.findall(r"[mnu]s/op", function_result[0][1],)[0]
+    time_unit = re.findall(r"[mnu]s/op", function_result[0][1],)[0]
+    try:
+        for i in range(len(function_result)):
+            # append
+            item = function_result[i]
+            item.append(
+                regex_mem.findall(function_result[i][1])[0])
+            item.append(
+                regex_alloc.findall(function_result[i][1])[0])
+            # function_result[i][2] = regex_mem.findall(function_result[i][1])[0]
+            # function_result[i][3] = regex_alloc.findall(function_result[i][1])[0]
+            function_result[i][1] = float(
+                regex_time.findall(function_result[i][1])[0])
 
-    for i in range(len(function_result)):
-        function_result[i][1] = float(
-            regex_time.findall(function_result[i][1])[0])
+        print("result", function_result)
 
-    sorted_function_result = sorted(function_result, key=lambda x: float(x[1]))
-    min_time = float(sorted_function_result[0][1])
+        sorted_function_result = sorted(
+            function_result, key=lambda x: float(x[1]))
 
-    # sorted_function_result.insert(0, ["function", "time/op", "ratio", "delay"])
-    format_output = [
-        f"{x[0]:20}    {x[1]:12}{unit}   {round(float(x[1]/min_time), 3):10}    {float(x[1])-min_time}{unit}" for x in sorted_function_result]
-    # format_output.insert(
-    #     0, "function name              time/op     ratio    delta")
-    format_output.insert(0,
-                         f"function name              time/op     ratio    delta")
+        min_time = float(sorted_function_result[0][1])
 
-    print("\n".join(format_output))
+        # sorted_function_result.insert(0, ["function", "time/op", "ratio", "delay" ])
+        # format_output = [f"{x[0]:20}    {x[1]:12}{time_unit}   {round(float(
+        # x[1]/min_time), 3):10}    {float(x[1])-min_time}{time_unit}" for x in sorted_function_result]
+        format_output = [f"{x[0]:20}    {x[1]:12}{time_unit}   {round(float(x[1]/min_time), 3):10}    {
+            float(x[1])-min_time}{time_unit}   {x[2]:10}    {x[3]:10}" for x in sorted_function_result]
+        # format_output.insert(
+        #     0, "function name              time/op     ratio    delta")
+        # format_output.insert(0,
+        #                      f"function name              time/op     ratio    delta")
 
-    os.remove("benchmark.test")
+        format_output.insert(0,
+                             f"function name              time/op     ratio    delta   mem  allocs")
+
+        print("\n".join(format_output))
+
+        os.remove("benchmark.test")
+    except Exception as e:
+        print(e)
+        print("urlContent exception:{}\nException at {}:{}".format(
+            e, e.__traceback__.tb_frame.f_code.co_filename, str(e.__traceback__.tb_lineno)))
 
 
 def GoReMod(file: str, project: str):
@@ -115,9 +141,9 @@ def go_cli(argv=[]):
     go_mod()
     go_build()
 
+    # must replace
+    #  yes you are right
 
-# must replace
-#  yes you are right
 
 def go_bench(argv=[]):  # go test -bench
     for i in argv:
@@ -157,7 +183,7 @@ def FileContentReplace(_src, old_s, new_s):
             content[i] = content[i].replace(old_s, new_s)
             print("replace", old_s, new_s)
             # print(content[i])
-# def FileContentReplaceRegex(_src)
+        # def FileContentReplaceRegex(_src)
     file = open(_src, "w", encoding="utf-8")
     file.writelines(content)
     file.close()
@@ -211,9 +237,9 @@ def go_mod(argv=[]):
     # GoReMod()
 
     GoProject = "github.com/"+Github_Username+"/"+project
-#     只有一个文件的修改是不足以偿还的
-# // 全都需要进行替换
-#     FileContentReplaceRegex("main.go", "./lib/*", GoProject)
+    #     只有一个文件的修改是不足以偿还的
+    # // 全都需要进行替换
+    #     FileContentReplaceRegex("main.go", "./lib/*", GoProject)
     CompletedProcess = subprocess.run(
         ["go", "mod", "init", GoProject], env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if CompletedProcess.returncode == 0:
@@ -226,7 +252,7 @@ def go_mod(argv=[]):
         with open("go.mod", "w") as file:
             file.writelines(lines)
 
-    Run("go mod tidy")
+        Run("go mod tidy")
 
 
 def go_import(argv=[]):
@@ -235,7 +261,7 @@ def go_import(argv=[]):
     else:
         ReplaceGoImport(argv[0], argv[1])
 
-# TODO : create every template init ????
+    # TODO : create every template init ????
 
 
 def go_init(argv=[]):
@@ -255,21 +281,21 @@ def go_hidegui(argv=[]):
 
     env.update({"CGO_ENABLED": "0", "GOOS": "windows"})
     subprocess.run(["go", "build", "-ldflags",
-                   "-s -w -H=windowsgui", "-o", project+".exe"], env=env)
+                    "-s -w -H=windowsgui", "-o", project+".exe"], env=env)
 
 
 def go_linux(argv=[]):
 
     env.update({"CGO_ENABLED": "0", "GOOS": "linux"})
     subprocess.run(["go", "build", "-ldflags",
-                   "-s -w", "-o", project], env=env)
+                    "-s -w", "-o", project], env=env)
 
 
 def go_static(argv=[]):
 
     env.update({"CGO_ENABLED": "0", "GOOS": "linux"})
     subprocess.run(["go", "build", "-ldflags",
-                   "-s -w -extldflags -static", "-o", project], env=env)
+                    "-s -w -extldflags -static", "-o", project], env=env)
 
 
 def go_proxy(argv=[]):

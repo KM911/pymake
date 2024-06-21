@@ -14,6 +14,11 @@ def rs(argv: list):
     # rs_release()
     rs_debug()
 
+
+def rs_build(argv: list):
+    rs_debug()
+
+
 def rs_release(argv: list):
 
     Run("cargo build --release")
@@ -22,7 +27,6 @@ def rs_release(argv: list):
 
 
 def rs_debug(argv: list):
-    Run("cargo build --debug")
+    Run("cargo build")
     # move file into current directory
     Run("cp ./target/debug/"+project+" ./"+project)
-

@@ -11,7 +11,6 @@ import subprocess
 # 输出cmd path or bash path
 
 Github_Username = "KM911"
-Template_Dir = "/home/km/Code/template/go/"
 
 pwd = os.getcwd()
 # print("pwd =", pwd)
@@ -21,6 +20,7 @@ env = os.environ.copy()
 
 
 def Run(command: str):
+    print(command)
     subprocess.run(command, shell=True)
 
 # def CommandSlient(command: str):
